@@ -8,7 +8,7 @@ def api_products():
         data = response.json()
         products = data.get("products", [])
         
-        for product in products[:]:  # visa antal produkter
+        for product in products[5:]:  # visa antal produkter
             print(f"Namn: {product['title']}")
             print(f"Pris: {product['price']} USD")
             print(f"Beskrivning: {product['description']}")
