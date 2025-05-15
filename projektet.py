@@ -1,5 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request, url_for
 import requests
+import json
+import os
 
 app = Flask(__name__)
 
@@ -18,8 +20,28 @@ class Konto():
     def set_lösenord(self, lösenord):
         self.__lösenord = lösenord
     
-    def get_lösenordl(self):
+    def get_lösenord(self):
         return self.__lösenord
+    
+    @staticmethod
+    def hämta_konton():
+        path = "slutprojektet/konto.json"
+        if not os.path.exists(path):
+            return []
+        with open(path, "r", encoding="utf-8") as file:
+            return json.load(file)
+
+    @classmethod
+    def spara_konto(cls, person):
+        konton = cls.hämta_konton()
+        konton.append({
+            "namn": person.get_namn(),
+            "email": person.get_email(),
+            "lösenord": person.get_lösenord(),
+            "saldo": person.get_saldo()
+        })
+        with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
+            json.dump(konton, file, indent=4) 
     
 class Person(Konto):       
     def __init__(self, namn, saldo, produkt_kundvagn, inloggad):
@@ -80,6 +102,7 @@ class Produkt(ProduktAPI):
             produkt_lista.append(produkt)
 
         return produkt_lista    
+  
 
 @app.route("/All-in-One-Shop", methods=["GET"])
 def home():
@@ -88,12 +111,47 @@ def home():
     return render_template('display.html', 
         produkter = produkter
     )
-    
 
-@app.route("/All-in-One-Shop/log", methods=["GET"])
+@app.route("/All-in-One-Shop/log", methods=["GET", "POST"])
 def logg():
     
-    return render_template('log.html', 
+    if request.method == "POST":
+        form_type = request.form.get("form-type")
+        
+        if form_type == "login":
+            email = request.form["email"]
+            lösenord = request.form["password"]
+            konton = Konto.hämta_konton()
+
+            for k in konton:
+                if k["email"] == email and k["lösenord"] == lösenord:
+                    return redirect(url_for("main", name=k["namn"]))
+            return render_template("log.html", fel="Fel e-post eller lösenord.")
+
+        elif form_type == "signup":
+            namn = request.form["name"]
+            email = request.form["email"]
+            lösenord = request.form["password"]
+            confirm = request.form["confirm-password"]
+
+            if lösenord != confirm:
+                return render_template("log.html",
+                    fel = "Lösenorden matchar inte."
+                )
+            
+            nytt_konto = Konto(namn, email, lösenord)
+            Konto.spara_konto(nytt_konto)
+            return redirect(url_for("main", name = namn))
+
+    return render_template("log.html")
+    
+@app.route("/All-in-One-Shop/log/välkomna-<name>", methods=["GET"])
+def main(name):
+    
+    produkter = Produkt.skapa_produkter_från_api()
+    return render_template("main.html", 
+        produkter = produkter, 
+        namn = name
     )
 
 if __name__ == "__main__":
