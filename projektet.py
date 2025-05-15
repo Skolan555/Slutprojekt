@@ -1,5 +1,7 @@
+from flask import Flask, render_template
 import requests
 
+app = Flask(__name__)
 saldo = 0
 
 class Konto():
@@ -31,7 +33,7 @@ class ProduktAPI():
     def __init__(self):
         self.api_url = "https://dummyjson.com/products"
         
-    def hämta_produktdata(self, antal=5): 
+    def hämta_produktdata(self, antal = 4): 
         try:
             response = requests.get(self.api_url, timeout=5) #Om inget svar kommer inom 5 sekunder, då ska den visa fel. 
             response.raise_for_status()  #Den kollar om svaret från API har en felkod.
@@ -65,38 +67,25 @@ class Produkt(ProduktAPI):
 
         for p in produkter_data:
             produkt = cls(
-                produkt_namn=p["title"],
-                produkt_pris=p["price"],
-                produkt_beskrivning=p["description"],
-                produkt_bild=p["thumbnail"]
+                produkt_namn = p["title"],
+                produkt_pris = p["price"],
+                produkt_beskrivning = p["description"],
+                produkt_bild = p["thumbnail"]
             )
             produkt_lista.append(produkt)
 
         return produkt_lista    
 
-def skapa_produkter_från_api():
-    temp_api = ProduktAPI()
-    produkter_data = temp_api.hämta_produktdata()
-    produkt_lista = []
-
-    for p in produkter_data:
-        produkt = Produkt(
-            produkt_namn=p["title"],
-            produkt_pris=p["price"],
-            produkt_beskrivning=p["description"],
-            produkt_bild=p["thumbnail"]
-        )
-        produkt_lista.append(produkt)
-
-    return produkt_lista
-
+@app.route("/All-in-One-Shop/Home", methods=["GET"])
 def main():
     produkter = Produkt.skapa_produkter_från_api()
-    for p in produkter:
-        p.visa_info()
     
+    return render_template('display.html', 
+        produkter = produkter
+    )
     
-main()
+if __name__ == "__main__":
+    app.run(debug=True)
 
 """
 git add .
@@ -105,4 +94,3 @@ git push
 
 194 id, 24 category
 """
-
