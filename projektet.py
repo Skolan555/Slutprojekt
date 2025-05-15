@@ -2,14 +2,12 @@ from flask import Flask, render_template
 import requests
 
 app = Flask(__name__)
-saldo = 0
 
 class Konto():
-    def __init__(self, namn, email, lösenord, saldo):
+    def __init__(self, namn, email, lösenord):
         self._namn = namn
         self.__email = email
         self.__lösenord = lösenord
-        self.__saldo = saldo
         
     def set_email(self, email):
         self.__email = email
@@ -22,12 +20,19 @@ class Konto():
     
     def get_lösenordl(self):
         return self.__lösenord
+    
+class Person(Konto):       
+    def __init__(self, namn, saldo, produkt_kundvagn, inloggad):
+        super().__init__(namn) 
+        self.__saldo = saldo
+        self.produkt_kundvagn  = produkt_kundvagn 
+        self.inloggad = inloggad
         
     def set_saldo(self, saldo):
         self.__saldo = saldo
     
     def get_saldo(self):
-        return self.__saldo        
+        return self.__saldo  
         
 class ProduktAPI():
     def __init__(self):
@@ -76,16 +81,24 @@ class Produkt(ProduktAPI):
 
         return produkt_lista    
 
-@app.route("/All-in-One-Shop/Home", methods=["GET"])
-def main():
+@app.route("/All-in-One-Shop", methods=["GET"])
+def home():
     produkter = Produkt.skapa_produkter_från_api()
     
     return render_template('display.html', 
         produkter = produkter
     )
     
+
+@app.route("/All-in-One-Shop/log", methods=["GET"])
+def logg():
+    
+    return render_template('log.html', 
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
+
 
 """
 git add .

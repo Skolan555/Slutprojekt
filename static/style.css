@@ -61,7 +61,7 @@ nav ul li a:hover {
 
 /* Hero-sektion */
 .hero {
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/hero-bg.jpg') center/cover no-repeat;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://lhc.no/wp-content/themes/yootheme/cache/ef/ICA_Norrtull_2020-8925-2-e1618483290173-ef0d39b6.jpeg') center/cover no-repeat;
     height: 500px;
     display: flex;
     flex-direction: column;

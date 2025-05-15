@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename ='log.css') }}">
+    <title>All in One Shop</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">All in <span>One</span> Shop</div>
+        </header>
+        
+        <main class="auth-container">
+            <div class="tabs">
+                <button class="tab active" onclick="showPanel('login')">Logga in</button>
+                <button class="tab" onclick="showPanel('signup')">Skapa konto</button>
+            </div>
+            
+            <!-- Inloggningsformulär -->
+            <div class="panel active" id="login">
+                <h2>Logga in på ditt konto</h2>
+                <form action="#" method="post" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-email">E-postadress</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Lösenord</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember" name="remember">
+                            <label for="remember">Kom ihåg mig</label>
+                        </div>
+                        <a href="#" class="forgot-password">Glömt lösenord?</a>
+                    </div>
+                    <button type="submit" class="auth-btn">Logga in</button>
+                </form>
+            </div>
+            
+            <!-- Registreringsformulär -->
+            <div class="panel" id="signup">
+                <h2>Skapa ett nytt konto</h2>
+                <form action="#" method="post" class="auth-form">
+                    <div class="form-group">
+                        <label for="signup-name">Fullständigt namn</label>
+                        <input type="text" id="signup-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">E-postadress</label>
+                        <input type="email" id="signup-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Lösenord</label>
+                        <input type="password" id="signup-password" name="password" required>
+                        <small>Lösenordet måste innehålla minst 8 tecken, en stor bokstav och en siffra</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm">Bekräfta lösenord</label>
+                        <input type="password" id="signup-confirm" name="confirm-password" required>
+                    </div>
+                    <div class="form-options">
+                        <div class="terms">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <label for="terms">Jag godkänner <a href="#">användarvillkor</a> och <a href="#">integritetspolicyn</a></label>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-btn">Skapa konto</button>
+                </form>
+            </div>
+        </main>
+        
+        <footer>
+            <p>&copy; 2025 All in One Shop. Alla rättigheter förbehållna.</p>
+        </footer>
+    </div>
+    
+    <script>
+        function showPanel(panelId) {
+            // Dölj alla paneler
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            // Avaktivera alla flikar
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Visa den valda panelen
+            document.getElementById(panelId).classList.add('active');
+            
+            // Aktivera den klickade fliken
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>
