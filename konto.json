@@ -3,6 +3,12 @@
         "namn": "Alex",
         "email": "alex.vestermark@elev.ga.ntig.se",
         "l\u00f6senord": "asdf123",
+        "saldo": 30000
+    },
+    {
+        "namn": "Ivo",
+        "email": "ivo@gmail.com",
+        "l\u00f6senord": "fdsa123",
         "saldo": 1000
     }
 ]

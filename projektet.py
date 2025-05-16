@@ -69,22 +69,23 @@ class ProduktAPI():
             print(f"Något gick fel vid hämtning av produkter: {e}")
             return [] #Den ska returnerar en tom lista för att undvika att det förstöra resten av programmet.
                 
-        
 class Produkt(ProduktAPI):
-    def __init__(self, produkt_namn, produkt_pris, produkt_beskrivning, produkt_bild):
-        super().__init__() # self från ProduktAPI
+    def __init__(self, produkt_namn, produkt_pris, produkt_beskrivning, produkt_bild, produkt_kategori):
+        super().__init__()
         self.produkt_namn = produkt_namn
         self.produkt_pris = produkt_pris
         self.produkt_beskrivning = produkt_beskrivning
         self.produkt_bild = produkt_bild
+        self.produkt_kategori = produkt_kategori  
         
     def visa_info(self):
         print(f"Namn: {self.produkt_namn}")
         print(f"Pris: {self.produkt_pris} USD")
         print(f"Beskrivning: {self.produkt_beskrivning}")
         print(f"Bild: {self.produkt_bild}")
+        print(f"Kategori: {self.produkt_kategori}")
         print("-" * 40)
-        
+
     @classmethod
     def skapa_produkter_från_api(cls):
         temp_api = ProduktAPI()
@@ -96,25 +97,28 @@ class Produkt(ProduktAPI):
                 produkt_namn = p["title"],
                 produkt_pris = p["price"],
                 produkt_beskrivning = p["description"],
-                produkt_bild = p["thumbnail"]
+                produkt_bild = p["thumbnail"],
+                produkt_kategori = p["category"]  # Lägg till kategori från API:t
             )
             produkt_lista.append(produkt)
 
         return produkt_lista    
-    
+
     @classmethod
     def visa_kategorier(cls):
         temp_api = ProduktAPI()
         produkter_data = temp_api.hämta_produktdata(antal = 194)
         kategorier = sorted({p["category"] for p in produkter_data})
         return kategorier
+
   
 @app.route("/All-in-One-Shop", methods=["GET"])
 def home():
     produkter = Produkt.skapa_produkter_från_api()
     
-    return render_template('display.html', 
-        produkter = produkter
+    return render_template('main.html', 
+        produkter = produkter,
+        view_type = "not_loggin"
     )
 
 @app.route("/All-in-One-Shop/log", methods=["GET", "POST"])
@@ -130,8 +134,8 @@ def logg():
 
             for k in konton:
                 if k["email"] == email and k["lösenord"] == lösenord:
-                    return redirect(url_for("main", name=k["namn"]))
-            return render_template("log.html", fel="Fel e-post eller lösenord.")
+                    return redirect(url_for("main", name = k["namn"]))
+            return render_template("log.html", fel = "Fel e-post eller lösenord.")
 
         elif form_type == "signup":
             namn = request.form["name"]
@@ -167,17 +171,46 @@ def main(name):
             return render_template("main.html", 
                 produkter = produkter, 
                 namn = name, 
-                saldo = person.get_saldo()
+                saldo = person.get_saldo(),
+                view_type = "produkter"
             )
 
     return "Konto hittades inte"
 
 @app.route("/All-in-One-Shop/kategorier", methods=["GET"])
 def kategorier():
+    
+    konton = Konto.hämta_konton()
+    for k in konton:
+        namn = k["namn"],
+        saldo = k["saldo"],
+        
     alla_kategorier = Produkt.visa_kategorier()
-    return render_template("kategorier.html", 
-        kategorier = alla_kategorier
+    return render_template("main.html", 
+        kategorier = alla_kategorier,
+        namn = namn,
+        saldo = saldo,
+        view_type = "kategorier"
     )
+    
+@app.route("/All-in-One-Shop/kategorier/<kategorier_namn>", methods=["GET"])
+def kategorier_namn(kategorier_namn):    
+    
+    produkter = Produkt.skapa_produkter_från_api()
+    produkter_i_kategori = [p for p in produkter if p.produkt_kategori == kategorier_namn]
+
+    konton = Konto.hämta_konton()
+    for k in konton:
+        namn = k["namn"],
+        saldo = k["saldo"],
+    
+    return render_template("main.html",  
+        produkters = produkter_i_kategori,
+        namn = namn,
+        saldo = saldo,
+        view_type = "kategorier_produkter"
+    )
+    
 
 
 if __name__ == "__main__":

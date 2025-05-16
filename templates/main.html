@@ -9,6 +9,118 @@
 </head>
 
 <body>
+    {%if view_type == "not_loggin"%}
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">All in <span>One</span> Shop</div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('logg') }}">Hem</a></li>
+                    <li><a href="{{ url_for('logg') }}">Kategorier</a></li>
+                    <li><a href="{{ url_for('logg') }}">Produkter</a></li>
+                    <li><a href="{{ url_for('logg') }}">Om oss</a></li>
+                    <li><a href="{{ url_for('logg') }}">Kontakt</a></li>
+                    <li><a href="{{ url_for('logg') }}"><img
+                                src="https://images.freeimages.com/fic/images/icons/1700/2d/512/cart.png" alt="card"
+                                width="30"></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <!-- Hero-sektion -->
+    <section class="hero">
+        <h1>Allt du behöver. En butik.</h1>
+        <p>Upptäck vårt breda sortiment av kvalitetsprodukter för alla dina behov. Från elektronik och kläder till
+            möbler och matvaror.</p>
+        <a href="{{ url_for('logg') }}" class="btn">Shoppa nu</a>
+    </section>
+
+    <!-- Populära produkter -->
+    <section class="products">
+        <h2 class="section-title">Populära Produkter</h2>
+        <div class="product-grid">
+            {% for produkt in produkter[:4] %}
+            <div class="product-card">
+                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
+                <div class="product-info">
+                    <h3>{{ produkt.produkt_namn }}</h3>
+                    <span class="price">{{ produkt.produkt_pris }} USD</span>
+                    <p>{{ produkt.produkt_beskrivning }}</p>
+                    <a href="{{ url_for('logg') }}" class="btn">Köp nu</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </section>
+    <!-- Om oss -->
+    <section class="about">
+        <div class="about-container">
+            <div class="about-text">
+                <h2>Om All in One Shop</h2>
+                <p>All in One Shop grundades 2020 med visionen att erbjuda en bekväm shoppingupplevelse där kunder
+                    hittar allt de behöver under ett tak. Vi värdesätter kvalitet, pålitlighet och kundnöjdhet.</p>
+                <p>Vårt team består av passionerade experter som noga väljer ut varje produkt i vårt sortiment. Vi
+                    strävar efter att vara det självklara valet för alla dina shoppingbehov.</p>
+                <a href="{{ url_for('logg') }}" class="btn">Läs mer om oss</a>
+            </div>
+            <div class="about-image">
+                <img src="https://cdn.discordapp.com/attachments/1115717109796839456/1372556761848090694/IMG_2446.jpg?ex=68273498&is=6825e318&hm=8fe69ac30fa018810eaf2b1ca3a88a847d2676dbbc5f7a8cdd5376743482ee65&"
+                    alt="Vårt team" style="width:100%; border-radius:8px;">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Information</h3>
+                    <ul>
+                        <li><a href="{{ url_for('logg') }}">Om oss</a></li>
+                        <li><a href="{{ url_for('logg') }}">Köpvillkor</a></li>
+                        <li><a href="{{ url_for('logg') }}">Integritetspolicy</a></li>
+                        <li><a href="{{ url_for('logg') }}">Karriär</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Kundservice</h3>
+                    <ul>
+                        <li><a href="{{ url_for('logg') }}">Kontakta oss</a></li>
+                        <li><a href="{{ url_for('logg') }}">Returer</a></li>
+                        <li><a href="{{ url_for('logg') }}">Leveransinformation</a></li>
+                        <li><a href="{{ url_for('logg') }}">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Mitt konto</h3>
+                    <ul>
+                        <li><a href="{{ url_for('logg') }}">Logga in</a></li>
+                        <li><a href="{{ url_for('logg') }}">Orderhistorik</a></li>
+                        <li><a href="{{ url_for('logg') }}">Önskelista</a></li>
+                        <li><a href="{{ url_for('logg') }}">Nyhetsbrev</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Kontakt</h3>
+                    <ul>
+                        <li>Tel: 08-123 45 67</li>
+                        <li>Email: info@allinoneshop.se</li>
+                        <li>Adress: Storgatan 1, 123 45 Stockholm</li>
+                        <li>Öppettider: Mån-Fre 10-18, Lör 10-16</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 All in One Shop. Alla rättigheter förbehållna.</p>
+            </div>
+        </div>
+    </footer>
+    {% else %}
+
+
     <!-- Header -->
     <header>
         <div class="header-container">
@@ -50,8 +162,13 @@
 
     <!-- Populära produkter -->
     <section class="products">
+        {%if view_type == "produkter" %}
         <h2 class="section-title">Populära Produkter</h2>
+        {%elif view_type == "kategorier" %}
+        <h2 class="section-title">Kategorier</h2>
+        {% endif %}
         <div class="product-grid">
+            {%if view_type == "produkter" %}
             {% for produkt in produkter[:4] %}
             <div class="product-card">
                 <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
@@ -63,6 +180,29 @@
                 </div>
             </div>
             {% endfor %}
+            {%elif view_type == "kategorier" %}
+            {% for kategori in kategorier %}
+            <div class="product-card">
+                <div class="product-info">
+                    <h3>{{ kategori }}</h3>
+                    <a href="{{ url_for('kategorier_namn', kategorier_namn = kategori) }}" class="btn">Gå nu</a>
+                </div>
+            </div>
+            {% endfor %}
+            {%elif view_type == "kategorier_produkter" %}
+            {% for produkt in produkters %}
+            <div class="product-card">
+                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
+                <div class="product-info">
+                    <h3>{{ produkt.produkt_namn }}</h3>
+                    <span class="price">{{ produkt.produkt_pris }} USD</span>
+                    <p>{{ produkt.produkt_beskrivning }}</p>
+                    <a href="" class="btn">Köp nu</a>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+
         </div>
 
     </section>
@@ -163,21 +303,21 @@
     </div>
 
     <script>
-    function toggleProfileMenu() {
-        document.getElementById("profilePopup").classList.toggle("show");
-    }
+        function toggleProfileMenu() {
+            document.getElementById("profilePopup").classList.toggle("show");
+        }
 
-    window.onclick = function (event) {
-        if (!event.target.matches('.profile-container img') && !event.target.closest('.profile-popup')) {
-            var popup = document.getElementById("profilePopup");
-            if (popup && popup.classList.contains('show')) {
-                popup.classList.remove('show');
+        window.onclick = function (event) {
+            if (!event.target.matches('.profile-container img') && !event.target.closest('.profile-popup')) {
+                var popup = document.getElementById("profilePopup");
+                if (popup && popup.classList.contains('show')) {
+                    popup.classList.remove('show');
+                }
             }
         }
-    }
-</script>
+    </script>
 
-
+    {% endif %}
 </body>
 
 </html>
