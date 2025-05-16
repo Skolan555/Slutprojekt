@@ -35,20 +35,19 @@ class Konto():
     def spara_konto(cls, person):
         konton = cls.hämta_konton()
         konton.append({
-            "namn": person.get_namn(),
+            "namn": person._namn,
             "email": person.get_email(),
             "lösenord": person.get_lösenord(),
-            "saldo": person.get_saldo()
+            "saldo": 1000
         })
         with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
             json.dump(konton, file, indent=4) 
     
 class Person(Konto):       
-    def __init__(self, namn, saldo, produkt_kundvagn, inloggad):
-        super().__init__(namn) 
+    def __init__(self, namn, saldo, produkt_kundvagn, email, lösenord):
+        super().__init__(namn, email, lösenord) 
         self.__saldo = saldo
         self.produkt_kundvagn  = produkt_kundvagn 
-        self.inloggad = inloggad
         
     def set_saldo(self, saldo):
         self.__saldo = saldo
@@ -58,9 +57,9 @@ class Person(Konto):
         
 class ProduktAPI():
     def __init__(self):
-        self.api_url = "https://dummyjson.com/products"
+        self.api_url = "https://dummyjson.com/products?limit=194"
         
-    def hämta_produktdata(self, antal = 4): 
+    def hämta_produktdata(self, antal = 194): 
         try:
             response = requests.get(self.api_url, timeout=5) #Om inget svar kommer inom 5 sekunder, då ska den visa fel. 
             response.raise_for_status()  #Den kollar om svaret från API har en felkod.
@@ -102,8 +101,14 @@ class Produkt(ProduktAPI):
             produkt_lista.append(produkt)
 
         return produkt_lista    
+    
+    @classmethod
+    def visa_kategorier(cls):
+        temp_api = ProduktAPI()
+        produkter_data = temp_api.hämta_produktdata(antal = 194)
+        kategorier = sorted({p["category"] for p in produkter_data})
+        return kategorier
   
-
 @app.route("/All-in-One-Shop", methods=["GET"])
 def home():
     produkter = Produkt.skapa_produkter_från_api()
@@ -148,11 +153,32 @@ def logg():
 @app.route("/All-in-One-Shop/log/välkomna-<name>", methods=["GET"])
 def main(name):
     
-    produkter = Produkt.skapa_produkter_från_api()
-    return render_template("main.html", 
-        produkter = produkter, 
-        namn = name
+    konton = Konto.hämta_konton()
+    for k in konton:
+        if k["namn"] == name:
+            person = Person(
+                namn = k["namn"],
+                email = k["email"],
+                lösenord = k["lösenord"],
+                saldo = k["saldo"],
+                produkt_kundvagn = []
+            )
+            produkter = Produkt.skapa_produkter_från_api()
+            return render_template("main.html", 
+                produkter = produkter, 
+                namn = name, 
+                saldo = person.get_saldo()
+            )
+
+    return "Konto hittades inte"
+
+@app.route("/All-in-One-Shop/kategorier", methods=["GET"])
+def kategorier():
+    alla_kategorier = Produkt.visa_kategorier()
+    return render_template("kategorier.html", 
+        kategorier = alla_kategorier
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)

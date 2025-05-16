@@ -1,17 +1,8 @@
 [
     {
-        "namn": "Alexs",
+        "namn": "Alex",
         "email": "alex.vestermark@elev.ga.ntig.se",
-        "l\u00f6senord": "asdf123"
-    },
-    {
-        "namn": "Sesa",
-        "email": "asasas@gmial.com",
-        "l\u00f6senord": "qwert"
-    },
-    {
-        "namn": "Ivo",
-        "email": "ivo@gmail.com",
-        "l\u00f6senord": "asdfgh"
+        "l\u00f6senord": "asdf123",
+        "saldo": 1000
     }
 ]

@@ -16,7 +16,7 @@
             <nav>
                 <ul>
                     <li><a href="">Hem</a></li>
-                    <li><a href="{{ url_for('kategorier') }}">Kategorier</a></li>
+                    <li><a href="">Kategorier</a></li>
                     <li><a href="">Produkter</a></li>
                     <li><a href="">Om oss</a></li>
                     <li><a href="">Kontakt</a></li>
@@ -50,16 +50,13 @@
 
     <!-- Populära produkter -->
     <section class="products">
-        <h2 class="section-title">Populära Produkter</h2>
+        <h2 class="section-title">Tillgängliga kategorier</h2>
         <div class="product-grid">
-            {% for produkt in produkter[:4] %}
+            {% for kategori in kategorier %}
             <div class="product-card">
-                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
                 <div class="product-info">
-                    <h3>{{ produkt.produkt_namn }}</h3>
-                    <span class="price">{{ produkt.produkt_pris }} USD</span>
-                    <p>{{ produkt.produkt_beskrivning }}</p>
-                    <a href="" class="btn">Köp nu</a>
+                    <h3>{{ kategori }}</h3>
+                    <a href="" class="btn">Gå nu</a>
                 </div>
             </div>
             {% endfor %}
