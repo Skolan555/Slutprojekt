@@ -23,7 +23,6 @@ class Konto():
     def get_lösenord(self):
         return self.__lösenord
     
-    @staticmethod
     def hämta_konton():
         path = "slutprojektet/konto.json"
         if not os.path.exists(path):
@@ -38,22 +37,58 @@ class Konto():
             "namn": person._namn,
             "email": person.get_email(),
             "lösenord": person.get_lösenord(),
-            "saldo": 1000
+            "saldo": 0,
+            "kundvagn": [],
+            "historik": []
         })
         with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
-            json.dump(konton, file, indent=4) 
+            json.dump(konton, file, indent = 4) 
     
 class Person(Konto):       
-    def __init__(self, namn, saldo, produkt_kundvagn, email, lösenord):
+    def __init__(self, namn, saldo, email, lösenord):
         super().__init__(namn, email, lösenord) 
         self.__saldo = saldo
-        self.produkt_kundvagn  = produkt_kundvagn 
+        self.produkt_kundvagn  = []
         
     def set_saldo(self, saldo):
         self.__saldo = saldo
     
     def get_saldo(self):
         return self.__saldo  
+    
+    def uppdatera_kundvagn(namn, ny_kundvagn):
+        konton = Konto.hämta_konton()
+        for konto in konton:
+            if konto["namn"] == namn:
+                konto["kundvagn"] = ny_kundvagn
+                break
+        with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
+            json.dump(konton, file, indent=4)
+    
+    def lägg_till(self, produkt_id):
+        temp_api = ProduktAPI()
+        produkter_data = temp_api.hämta_produktdata()
+        for produkt in produkter_data:
+            if produkt["id"] == produkt_id:
+                self.produkt_kundvagn.append(produkt)
+                Person.uppdatera_kundvagn(self._namn, self.produkt_kundvagn)
+                break
+
+    def uppdatera_saldo(namn, nytt_saldo):
+        konton = Konto.hämta_konton()
+
+        for konto in konton:
+            if konto["namn"] == namn:
+                konto["saldo"] = nytt_saldo
+                break 
+
+        with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
+            json.dump(konton, file, indent = 4)
+
+    def sätt_in_saldo(self, belopp):
+        if belopp >= 0:
+            self.__saldo += belopp
+            Person.uppdatera_saldo(self._namn, self.__saldo)
         
 class ProduktAPI():
     def __init__(self):
@@ -70,13 +105,14 @@ class ProduktAPI():
             return [] #Den ska returnerar en tom lista för att undvika att det förstöra resten av programmet.
                 
 class Produkt(ProduktAPI):
-    def __init__(self, produkt_namn, produkt_pris, produkt_beskrivning, produkt_bild, produkt_kategori):
+    def __init__(self, produkt_namn, produkt_pris, produkt_beskrivning, produkt_bild, produkt_kategori, produkt_id):
         super().__init__()
         self.produkt_namn = produkt_namn
         self.produkt_pris = produkt_pris
         self.produkt_beskrivning = produkt_beskrivning
         self.produkt_bild = produkt_bild
         self.produkt_kategori = produkt_kategori  
+        self.produkt_id = produkt_id
         
     def visa_info(self):
         print(f"Namn: {self.produkt_namn}")
@@ -98,14 +134,15 @@ class Produkt(ProduktAPI):
                 produkt_pris = p["price"],
                 produkt_beskrivning = p["description"],
                 produkt_bild = p["thumbnail"],
-                produkt_kategori = p["category"]  # Lägg till kategori från API:t
+                produkt_kategori = p["category"],
+                produkt_id = p["id"]
             )
             produkt_lista.append(produkt)
+            
 
         return produkt_lista    
 
-    @classmethod
-    def visa_kategorier(cls):
+    def visa_kategorier():
         temp_api = ProduktAPI()
         produkter_data = temp_api.hämta_produktdata(antal = 194)
         kategorier = sorted({p["category"] for p in produkter_data})
@@ -154,73 +191,121 @@ def logg():
 
     return render_template("log.html")
     
-@app.route("/All-in-One-Shop/log/välkomna-<name>", methods=["GET"])
+@app.route("/All-in-One-Shop/log/välkomna-<name>", methods=["GET", "POST"])
 def main(name):
     
     konton = Konto.hämta_konton()
+    
     for k in konton:
         if k["namn"] == name:
             person = Person(
                 namn = k["namn"],
                 email = k["email"],
                 lösenord = k["lösenord"],
-                saldo = k["saldo"],
-                produkt_kundvagn = []
+                saldo = int(k["saldo"]),
             )
+            person.produkt_kundvagn = k.get("kundvagn", [])
+            
+            if request.method == "POST":
+                form_type = request.form.get("form-type")
+                if form_type == "saldo":
+                    try:
+                        belopp = int(request.form.get("deposit"))
+                        if belopp >= 0:
+                            person.sätt_in_saldo(belopp)
+                    except (ValueError, TypeError):
+                        pass
+                elif form_type == "köp":
+                    try:
+                        produkt_id = int(request.form.get("produkt_id"))
+                        person.lägg_till(produkt_id)
+
+                    except (ValueError, TypeError):
+                        return render_template("log.html",
+                            fel = "Felaktigt produkt-ID"
+                        )    
+                    
             produkter = Produkt.skapa_produkter_från_api()
             return render_template("main.html", 
                 produkter = produkter, 
                 namn = name, 
                 saldo = person.get_saldo(),
+                kundvagn = person.produkt_kundvagn,
                 view_type = "produkter"
             )
 
     return "Konto hittades inte"
 
-@app.route("/All-in-One-Shop/kategorier", methods=["GET"])
-def kategorier():
+
+@app.route("/All-in-One-Shop/log/<namn>/kategorier", methods=["GET"])
+def kategorier(namn):
     
     konton = Konto.hämta_konton()
     for k in konton:
-        namn = k["namn"],
-        saldo = k["saldo"],
+         if k["namn"] == namn:
+            person = Person(
+                namn = k["namn"],
+                email = k["email"],
+                lösenord = k["lösenord"],
+                saldo = int(k["saldo"]),
+            )
+            person.produkt_kundvagn = k.get("kundvagn", [])
         
     alla_kategorier = Produkt.visa_kategorier()
     return render_template("main.html", 
         kategorier = alla_kategorier,
         namn = namn,
-        saldo = saldo,
+        saldo = person.get_saldo(),
         view_type = "kategorier"
     )
     
-@app.route("/All-in-One-Shop/kategorier/<kategorier_namn>", methods=["GET"])
-def kategorier_namn(kategorier_namn):    
+@app.route("/All-in-One-Shop/log/<namn>/kategorier/<kategorier_namn>", methods=["GET", "POST"])
+def kategorier_namn(kategorier_namn, namn):    
     
     produkter = Produkt.skapa_produkter_från_api()
     produkter_i_kategori = [p for p in produkter if p.produkt_kategori == kategorier_namn]
 
     konton = Konto.hämta_konton()
     for k in konton:
-        namn = k["namn"],
-        saldo = k["saldo"],
+        if k["namn"] == namn:
+            person = Person(
+                namn = k["namn"],
+                email = k["email"],
+                lösenord = k["lösenord"],
+                saldo = int(k["saldo"]),
+            )
+            person.produkt_kundvagn = k.get("kundvagn", [])
+            if request.method == "POST":
+                form_type = request.form.get("form-type")
+                if form_type == "saldo":
+                    try:
+                        belopp = int(request.form.get("deposit"))
+                        if belopp >= 0:
+                            person.sätt_in_saldo(belopp)
+                    except (ValueError, TypeError):
+                        pass
+                elif form_type == "köp":
+                    try:
+                        produkt_id = int(request.form.get("produkt_id"))
+                        person.lägg_till(produkt_id)
+
+                    except (ValueError, TypeError):
+                        return render_template("log.html",
+                            fel = "Felaktigt produkt-ID"
+                        ) 
     
     return render_template("main.html",  
         produkters = produkter_i_kategori,
         namn = namn,
-        saldo = saldo,
+        saldo = person.get_saldo(),
         view_type = "kategorier_produkter"
     )
-    
-
 
 if __name__ == "__main__":
     app.run(debug=True)
-
 
 """
 git add .
 git commit -m "First py file"
 git push
-
-194 id, 24 category
 """

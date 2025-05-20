@@ -42,8 +42,8 @@
         <div class="product-grid">
             {% for produkt in produkter[:4] %}
             <div class="product-card">
-                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
-                <div class="product-info">
+                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img-1">
+                <div class="product-info-1">
                     <h3>{{ produkt.produkt_namn }}</h3>
                     <span class="price">{{ produkt.produkt_pris }} USD</span>
                     <p>{{ produkt.produkt_beskrivning }}</p>
@@ -128,12 +128,28 @@
             <nav>
                 <ul>
                     <li><a href="">Hem</a></li>
-                    <li><a href="{{ url_for('kategorier') }}">Kategorier</a></li>
+                    <li><a href="{{ url_for('kategorier', namn = namn) }}">Kategorier</a></li>
                     <li><a href="">Produkter</a></li>
                     <li><a href="">Om oss</a></li>
                     <li><a href="">Kontakt</a></li>
-                    <li><a href=""><img src="https://images.freeimages.com/fic/images/icons/1700/2d/512/cart.png"
-                                alt="card" width="30"></a></li>
+                    <div class="dropdown-1">
+        <button class="dropdown-button">
+            <img src="https://images.freeimages.com/fic/images/icons/1700/2d/512/cart.png" alt="Varukorg" class="cart-icon">
+            Visa produkter
+        </button>
+        <div class="dropdown-content-1">
+            {% for produkt in kundvagn %}
+            <a href="#" class="product-item-1">
+                <img src="{{ produkt.thumbnail }}" alt="{{ produkt.title }}" class="product-img-1">
+                <div class="product-info-1">
+                    <div class="product-name">{{ produkt.title }}</div>
+                    <div class="product-price">{{ produkt.price }} $</div>
+                </div>
+            </a>
+        {% endfor %}
+        <button class="btn">Köp nu</button>
+        </div>
+    </div>
                     <li class="profile-container">
                         <a href="javascript:void(0);" onclick="toggleProfileMenu()">
                             <img src="https://cdn.iconscout.com/icon/free/png-256/free-account-icon-download-in-svg-png-gif-file-formats--profile-user-avatar-travel-pack-holidays-icons-1538680.png?f=webp"
@@ -144,7 +160,8 @@
                             <ul>
                                 <li><a href="">Min profil</a></li>
                                 <li><a href="">Mina ordrar</a></li>
-                                <li><a href=""><span>Logga ut</span></a></li>
+                                <li><a href="" id="openDepositModal">Sätta in saldo</a></li>
+                                <li><a href="{{ url_for('home')}}"><span>Logga ut</span></a></li>
                             </ul>
                         </div>
                     </li>
@@ -176,7 +193,11 @@
                     <h3>{{ produkt.produkt_namn }}</h3>
                     <span class="price">{{ produkt.produkt_pris }} USD</span>
                     <p>{{ produkt.produkt_beskrivning }}</p>
-                    <a href="" class="btn">Köp nu</a>
+                    <form method="post">
+                        <input type="hidden" name="form-type" value="köp">
+                        <input type="hidden" name="produkt_id" value="{{ produkt.produkt_id }}">
+                        <button type="submit" class="btn">Köp nu</button>
+                    </form>
                 </div>
             </div>
             {% endfor %}
@@ -185,7 +206,8 @@
             <div class="product-card">
                 <div class="product-info">
                     <h3>{{ kategori }}</h3>
-                    <a href="{{ url_for('kategorier_namn', kategorier_namn = kategori) }}" class="btn">Gå nu</a>
+                    <a href="{{ url_for('kategorier_namn', kategorier_namn = kategori, namn = namn) }}" class="btn">Gå
+                        nu</a>
                 </div>
             </div>
             {% endfor %}
@@ -197,7 +219,11 @@
                     <h3>{{ produkt.produkt_namn }}</h3>
                     <span class="price">{{ produkt.produkt_pris }} USD</span>
                     <p>{{ produkt.produkt_beskrivning }}</p>
-                    <a href="" class="btn">Köp nu</a>
+                    <form method="post">
+                        <input type="hidden" name="form-type" value="köp">
+                        <input type="hidden" name="produkt_id" value="{{ produkt.produkt_id }}">
+                        <button type="submit" class="btn">Köp nu</button>
+                    </form>
                 </div>
             </div>
             {% endfor %}
@@ -218,7 +244,7 @@
                 <a href="" class="btn">Läs mer om oss</a>
             </div>
             <div class="about-image">
-                <img src="https://cdn.discordapp.com/attachments/1115717109796839456/1372556761848090694/IMG_2446.jpg?ex=68273498&is=6825e318&hm=8fe69ac30fa018810eaf2b1ca3a88a847d2676dbbc5f7a8cdd5376743482ee65&"
+                <img src="https://cdn.discordapp.com/attachments/1115717109796839456/1372556761848090694/IMG_2446.jpg?ex=682d2358&is=682bd1d8&hm=b570cb0f78412a3fab46d12c97248f1bf47af7d108a1762b9415910dd6398e2f&"
                     alt="Vårt team" style="width:100%; border-radius:8px;">
             </div>
         </div>
@@ -272,33 +298,38 @@
     </footer>
 
     <div class="modal-overlay" id="depositModal">
+        {% if fel %}
+        <p style="color: red;">{{ fel }}</p>
+        {% endif %}
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Sätta in pengar</h2>
                 <button class="close-modal" onclick="closeDepositModal()">&times;</button>
             </div>
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="depositAmount">Belopp (USD)</label>
-                    <input type="number" id="depositAmount" min="1" step="1" placeholder="Ange belopp">
+            <form method="POST" action="/All-in-One-Shop/log/välkomna-{{ namn }}">
+                <div class="modal-body">
+                    <div class="input-group">
+                        <label for="depositAmount">Belopp (USD)</label>
+                        <input type="number" id="depositAmount" name="deposit" min="1" step="1"
+                            placeholder="Ange belopp">
+                    </div>
+                    <div class="input-group">
+                        <label for="cardNumber">Kortnummer</label>
+                        <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
+                    </div>
+                    <div class="input-group">
+                        <label for="expiryDate">Utgångsdatum</label>
+                        <input type="text" id="expiryDate" placeholder="MM/ÅÅ">
+                    </div>
+                    <div class="input-group">
+                        <label for="cvv">CVV</label>
+                        <input type="password" id="cvv" placeholder="XXX">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="cardNumber">Kortnummer</label>
-                    <input type="text" id="cardNumber" placeholder="XXXX XXXX XXXX XXXX">
+                <div class="modal-footer">
+                    <button class="modal-btn btn-cancel" onclick="closeDepositModal()">Avbryt</button>
+                    <button class="modal-btn btn-deposit" type="submit">Sätt in</button>
                 </div>
-                <div class="input-group">
-                    <label for="expiryDate">Utgångsdatum</label>
-                    <input type="text" id="expiryDate" placeholder="MM/ÅÅ">
-                </div>
-                <div class="input-group">
-                    <label for="cvv">CVV</label>
-                    <input type="password" id="cvv" placeholder="XXX">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn btn-cancel" onclick="closeDepositModal()">Avbryt</button>
-                <button class="modal-btn btn-deposit" onclick="processDeposit()">Sätt in</button>
-            </div>
         </div>
     </div>
 
@@ -315,6 +346,21 @@
                 }
             }
         }
+
+        function openDepositModal() {
+            document.getElementById('depositModal').style.display = 'flex';
+        }
+
+        function closeDepositModal() {
+            document.getElementById('depositModal').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('openDepositModal').addEventListener('click', function (e) {
+                e.preventDefault();
+                openDepositModal();
+            });
+        });    
     </script>
 
     {% endif %}
