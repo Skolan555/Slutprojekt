@@ -3,247 +3,127 @@
         "namn": "Alex",
         "email": "alex.vestermark@elev.ga.ntig.se",
         "l\u00f6senord": "asdf123",
-        "saldo": 50500,
+        "saldo": 2000.0,
         "kundvagn": [
             {
-                "id": 139,
-                "title": "Baseball Glove",
-                "description": "The Baseball Glove is a protective glove worn by baseball players. It is designed to catch and field the baseball, providing players with comfort and control during the game.",
-                "category": "sports-accessories",
-                "price": 24.99,
-                "discountPercentage": 2.9,
-                "rating": 3.96,
-                "stock": 22,
+                "id": 3,
+                "title": "Powder Canister",
+                "description": "The Powder Canister is a finely milled setting powder designed to set makeup and control shine. With a lightweight and translucent formula, it provides a smooth and matte finish.",
+                "category": "beauty",
+                "price": 14.99,
+                "discountPercentage": 9.84,
+                "rating": 4.64,
+                "stock": 89,
                 "tags": [
-                    "sports equipment",
-                    "baseball"
+                    "beauty",
+                    "face powder"
                 ],
-                "sku": "SPO-BRD-BAS-139",
-                "weight": 1,
+                "brand": "Velvet Touch",
+                "sku": "BEA-VEL-POW-003",
+                "weight": 8,
                 "dimensions": {
-                    "width": 23.84,
-                    "height": 11.12,
-                    "depth": 5.85
+                    "width": 29.27,
+                    "height": 27.93,
+                    "depth": 20.59
                 },
-                "warrantyInformation": "Lifetime warranty",
+                "warrantyInformation": "3 months warranty",
+                "shippingInformation": "Ships in 1-2 business days",
+                "availabilityStatus": "In Stock",
+                "reviews": [
+                    {
+                        "rating": 4,
+                        "comment": "Would buy again!",
+                        "date": "2025-04-30T09:41:02.053Z",
+                        "reviewerName": "Alexander Jones",
+                        "reviewerEmail": "alexander.jones@x.dummyjson.com"
+                    },
+                    {
+                        "rating": 5,
+                        "comment": "Highly impressed!",
+                        "date": "2025-04-30T09:41:02.053Z",
+                        "reviewerName": "Elijah Cruz",
+                        "reviewerEmail": "elijah.cruz@x.dummyjson.com"
+                    },
+                    {
+                        "rating": 1,
+                        "comment": "Very dissatisfied!",
+                        "date": "2025-04-30T09:41:02.053Z",
+                        "reviewerName": "Avery Perez",
+                        "reviewerEmail": "avery.perez@x.dummyjson.com"
+                    }
+                ],
+                "returnPolicy": "No return policy",
+                "minimumOrderQuantity": 22,
+                "meta": {
+                    "createdAt": "2025-04-30T09:41:02.053Z",
+                    "updatedAt": "2025-04-30T09:41:02.053Z",
+                    "barcode": "8418883906837",
+                    "qrCode": "https://cdn.dummyjson.com/public/qr-code.png"
+                },
+                "images": [
+                    "https://cdn.dummyjson.com/product-images/beauty/powder-canister/1.webp"
+                ],
+                "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/powder-canister/thumbnail.webp"
+            },
+            {
+                "id": 2,
+                "title": "Eyeshadow Palette with Mirror",
+                "description": "The Eyeshadow Palette with Mirror offers a versatile range of eyeshadow shades for creating stunning eye looks. With a built-in mirror, it's convenient for on-the-go makeup application.",
+                "category": "beauty",
+                "price": 19.99,
+                "discountPercentage": 18.19,
+                "rating": 2.86,
+                "stock": 34,
+                "tags": [
+                    "beauty",
+                    "eyeshadow"
+                ],
+                "brand": "Glamour Beauty",
+                "sku": "BEA-GLA-EYE-002",
+                "weight": 9,
+                "dimensions": {
+                    "width": 9.26,
+                    "height": 22.47,
+                    "depth": 27.67
+                },
+                "warrantyInformation": "1 year warranty",
                 "shippingInformation": "Ships in 2 weeks",
                 "availabilityStatus": "In Stock",
                 "reviews": [
                     {
-                        "rating": 1,
-                        "comment": "Very unhappy with my purchase!",
-                        "date": "2025-04-30T09:41:02.054Z",
-                        "reviewerName": "Hazel Gardner",
-                        "reviewerEmail": "hazel.gardner@x.dummyjson.com"
+                        "rating": 5,
+                        "comment": "Great product!",
+                        "date": "2025-04-30T09:41:02.053Z",
+                        "reviewerName": "Savannah Gomez",
+                        "reviewerEmail": "savannah.gomez@x.dummyjson.com"
                     },
                     {
                         "rating": 4,
-                        "comment": "Great value for money!",
-                        "date": "2025-04-30T09:41:02.054Z",
-                        "reviewerName": "Scarlett Wright",
-                        "reviewerEmail": "scarlett.wright@x.dummyjson.com"
+                        "comment": "Awesome product!",
+                        "date": "2025-04-30T09:41:02.053Z",
+                        "reviewerName": "Christian Perez",
+                        "reviewerEmail": "christian.perez@x.dummyjson.com"
                     },
                     {
-                        "rating": 3,
-                        "comment": "Would not recommend!",
-                        "date": "2025-04-30T09:41:02.054Z",
-                        "reviewerName": "Nathan Reed",
-                        "reviewerEmail": "nathan.reed@x.dummyjson.com"
-                    }
-                ],
-                "returnPolicy": "90 days return policy",
-                "minimumOrderQuantity": 8,
-                "meta": {
-                    "createdAt": "2025-04-30T09:41:02.054Z",
-                    "updatedAt": "2025-04-30T09:41:02.054Z",
-                    "barcode": "1607433635330",
-                    "qrCode": "https://cdn.dummyjson.com/public/qr-code.png"
-                },
-                "images": [
-                    "https://cdn.dummyjson.com/product-images/sports-accessories/baseball-glove/1.webp",
-                    "https://cdn.dummyjson.com/product-images/sports-accessories/baseball-glove/2.webp",
-                    "https://cdn.dummyjson.com/product-images/sports-accessories/baseball-glove/3.webp"
-                ],
-                "thumbnail": "https://cdn.dummyjson.com/product-images/sports-accessories/baseball-glove/thumbnail.webp"
-            },
-            {
-                "id": 152,
-                "title": "Tennis Racket",
-                "description": "The Tennis Racket is an essential piece of equipment used in the sport of tennis. It features a frame with strings and a grip, allowing players to hit the tennis ball.",
-                "category": "sports-accessories",
-                "price": 49.99,
-                "discountPercentage": 19.61,
-                "rating": 4.03,
-                "stock": 6,
-                "tags": [
-                    "sports equipment",
-                    "tennis"
-                ],
-                "sku": "SPO-BRD-TEN-152",
-                "weight": 7,
-                "dimensions": {
-                    "width": 17.7,
-                    "height": 16.38,
-                    "depth": 18.74
-                },
-                "warrantyInformation": "5 year warranty",
-                "shippingInformation": "Ships overnight",
-                "availabilityStatus": "Low Stock",
-                "reviews": [
-                    {
-                        "rating": 3,
+                        "rating": 1,
                         "comment": "Poor quality!",
-                        "date": "2025-04-30T09:41:02.054Z",
-                        "reviewerName": "Mason Parker",
-                        "reviewerEmail": "mason.parker@x.dummyjson.com"
-                    },
-                    {
-                        "rating": 5,
-                        "comment": "Highly impressed!",
-                        "date": "2025-04-30T09:41:02.054Z",
-                        "reviewerName": "Gabriel Bailey",
-                        "reviewerEmail": "gabriel.bailey@x.dummyjson.com"
-                    },
-                    {
-                        "rating": 5,
-                        "comment": "Highly recommended!",
-                        "date": "2025-04-30T09:41:02.054Z",
-                        "reviewerName": "Lincoln Kelly",
-                        "reviewerEmail": "lincoln.kelly@x.dummyjson.com"
+                        "date": "2025-04-30T09:41:02.053Z",
+                        "reviewerName": "Nicholas Bailey",
+                        "reviewerEmail": "nicholas.bailey@x.dummyjson.com"
                     }
                 ],
                 "returnPolicy": "7 days return policy",
-                "minimumOrderQuantity": 5,
-                "meta": {
-                    "createdAt": "2025-04-30T09:41:02.054Z",
-                    "updatedAt": "2025-04-30T09:41:02.054Z",
-                    "barcode": "5611498376196",
-                    "qrCode": "https://cdn.dummyjson.com/public/qr-code.png"
-                },
-                "images": [
-                    "https://cdn.dummyjson.com/product-images/sports-accessories/tennis-racket/1.webp"
-                ],
-                "thumbnail": "https://cdn.dummyjson.com/product-images/sports-accessories/tennis-racket/thumbnail.webp"
-            },
-            {
-                "id": 3,
-                "title": "Powder Canister",
-                "description": "The Powder Canister is a finely milled setting powder designed to set makeup and control shine. With a lightweight and translucent formula, it provides a smooth and matte finish.",
-                "category": "beauty",
-                "price": 14.99,
-                "discountPercentage": 9.84,
-                "rating": 4.64,
-                "stock": 89,
-                "tags": [
-                    "beauty",
-                    "face powder"
-                ],
-                "brand": "Velvet Touch",
-                "sku": "BEA-VEL-POW-003",
-                "weight": 8,
-                "dimensions": {
-                    "width": 29.27,
-                    "height": 27.93,
-                    "depth": 20.59
-                },
-                "warrantyInformation": "3 months warranty",
-                "shippingInformation": "Ships in 1-2 business days",
-                "availabilityStatus": "In Stock",
-                "reviews": [
-                    {
-                        "rating": 4,
-                        "comment": "Would buy again!",
-                        "date": "2025-04-30T09:41:02.053Z",
-                        "reviewerName": "Alexander Jones",
-                        "reviewerEmail": "alexander.jones@x.dummyjson.com"
-                    },
-                    {
-                        "rating": 5,
-                        "comment": "Highly impressed!",
-                        "date": "2025-04-30T09:41:02.053Z",
-                        "reviewerName": "Elijah Cruz",
-                        "reviewerEmail": "elijah.cruz@x.dummyjson.com"
-                    },
-                    {
-                        "rating": 1,
-                        "comment": "Very dissatisfied!",
-                        "date": "2025-04-30T09:41:02.053Z",
-                        "reviewerName": "Avery Perez",
-                        "reviewerEmail": "avery.perez@x.dummyjson.com"
-                    }
-                ],
-                "returnPolicy": "No return policy",
-                "minimumOrderQuantity": 22,
+                "minimumOrderQuantity": 20,
                 "meta": {
                     "createdAt": "2025-04-30T09:41:02.053Z",
                     "updatedAt": "2025-04-30T09:41:02.053Z",
-                    "barcode": "8418883906837",
+                    "barcode": "9170275171413",
                     "qrCode": "https://cdn.dummyjson.com/public/qr-code.png"
                 },
                 "images": [
-                    "https://cdn.dummyjson.com/product-images/beauty/powder-canister/1.webp"
+                    "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/1.webp"
                 ],
-                "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/powder-canister/thumbnail.webp"
-            },
-            {
-                "id": 3,
-                "title": "Powder Canister",
-                "description": "The Powder Canister is a finely milled setting powder designed to set makeup and control shine. With a lightweight and translucent formula, it provides a smooth and matte finish.",
-                "category": "beauty",
-                "price": 14.99,
-                "discountPercentage": 9.84,
-                "rating": 4.64,
-                "stock": 89,
-                "tags": [
-                    "beauty",
-                    "face powder"
-                ],
-                "brand": "Velvet Touch",
-                "sku": "BEA-VEL-POW-003",
-                "weight": 8,
-                "dimensions": {
-                    "width": 29.27,
-                    "height": 27.93,
-                    "depth": 20.59
-                },
-                "warrantyInformation": "3 months warranty",
-                "shippingInformation": "Ships in 1-2 business days",
-                "availabilityStatus": "In Stock",
-                "reviews": [
-                    {
-                        "rating": 4,
-                        "comment": "Would buy again!",
-                        "date": "2025-04-30T09:41:02.053Z",
-                        "reviewerName": "Alexander Jones",
-                        "reviewerEmail": "alexander.jones@x.dummyjson.com"
-                    },
-                    {
-                        "rating": 5,
-                        "comment": "Highly impressed!",
-                        "date": "2025-04-30T09:41:02.053Z",
-                        "reviewerName": "Elijah Cruz",
-                        "reviewerEmail": "elijah.cruz@x.dummyjson.com"
-                    },
-                    {
-                        "rating": 1,
-                        "comment": "Very dissatisfied!",
-                        "date": "2025-04-30T09:41:02.053Z",
-                        "reviewerName": "Avery Perez",
-                        "reviewerEmail": "avery.perez@x.dummyjson.com"
-                    }
-                ],
-                "returnPolicy": "No return policy",
-                "minimumOrderQuantity": 22,
-                "meta": {
-                    "createdAt": "2025-04-30T09:41:02.053Z",
-                    "updatedAt": "2025-04-30T09:41:02.053Z",
-                    "barcode": "8418883906837",
-                    "qrCode": "https://cdn.dummyjson.com/public/qr-code.png"
-                },
-                "images": [
-                    "https://cdn.dummyjson.com/product-images/beauty/powder-canister/1.webp"
-                ],
-                "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/powder-canister/thumbnail.webp"
+                "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/thumbnail.webp"
             }
         ],
         "historik": []
@@ -252,7 +132,7 @@
         "namn": "Ivo",
         "email": "ivo@gmail.com",
         "l\u00f6senord": "fdsa123",
-        "saldo": 1000,
+        "saldo": 0.0,
         "kundvagn": [],
         "historik": []
     }

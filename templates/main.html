@@ -42,12 +42,12 @@
         <div class="product-grid">
             {% for produkt in produkter[:4] %}
             <div class="product-card">
-                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img-1">
-                <div class="product-info-1">
+                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
+                <div class="product-info">
                     <h3>{{ produkt.produkt_namn }}</h3>
                     <span class="price">{{ produkt.produkt_pris }} USD</span>
                     <p>{{ produkt.produkt_beskrivning }}</p>
-                    <a href="{{ url_for('logg') }}" class="btn">Köp nu</a>
+                    <a href="{{ url_for('logg') }}"><button type="submit" class="btn">Lägg till i kundvagn</button></a>
                 </div>
             </div>
             {% endfor %}
@@ -127,29 +127,40 @@
             <div class="logo">All in <span>One</span> Shop</div>
             <nav>
                 <ul>
-                    <li><a href="">Hem</a></li>
+                    <li><a href="{{ url_for('main', name = namn) }}">Hem</a></li>
                     <li><a href="{{ url_for('kategorier', namn = namn) }}">Kategorier</a></li>
                     <li><a href="">Produkter</a></li>
                     <li><a href="">Om oss</a></li>
                     <li><a href="">Kontakt</a></li>
                     <div class="dropdown-1">
-        <button class="dropdown-button">
-            <img src="https://images.freeimages.com/fic/images/icons/1700/2d/512/cart.png" alt="Varukorg" class="cart-icon">
-            Visa produkter
-        </button>
-        <div class="dropdown-content-1">
-            {% for produkt in kundvagn %}
-            <a href="#" class="product-item-1">
-                <img src="{{ produkt.thumbnail }}" alt="{{ produkt.title }}" class="product-img-1">
-                <div class="product-info-1">
-                    <div class="product-name">{{ produkt.title }}</div>
-                    <div class="product-price">{{ produkt.price }} $</div>
-                </div>
-            </a>
-        {% endfor %}
-        <button class="btn">Köp nu</button>
-        </div>
-    </div>
+                        <button class="dropdown-button">
+                            <img src="https://images.freeimages.com/fic/images/icons/1700/2d/512/cart.png"
+                                alt="Varukorg" class="cart-icon">
+                            Visa produkter
+                        </button>
+                        <div class="dropdown-content-1">
+                            {% for produkt in kundvagn %}
+                            <a href="/ta_bort/{{ namn }}/{{ produkt.id }}"  class="product-item-1">
+                                <img src="{{ produkt.thumbnail }}" alt="{{ produkt.title }}" class="product-img-1">
+                                <div class="product-info-1">
+                                    <div class="product-name">{{ produkt.title }}</div>
+                                    <div class="product-price">{{ produkt.price }} $</div>
+                                    <strong><span>Ta bort</span></strong>
+                                </div>
+                            </a>
+                            {% endfor %}
+                            <form method="POST">
+                                <input type="hidden" name="form-type" value="checkout">
+                                <button type="submit" class="btn">Köp nu</button>
+                            </form> 
+                            {% set total = namespace(sum=0) %}
+                            {% for pris in kundvagn %}
+                            {% set total.sum = total.sum + pris.price %}
+                            {% endfor %}
+                            <span class="price">Totalt: {{ '%.2f' | format(total.sum) }} $</span>
+                            <span class="price">{{ fel }}</span>
+                        </div>
+                    </div>
                     <li class="profile-container">
                         <a href="javascript:void(0);" onclick="toggleProfileMenu()">
                             <img src="https://cdn.iconscout.com/icon/free/png-256/free-account-icon-download-in-svg-png-gif-file-formats--profile-user-avatar-travel-pack-holidays-icons-1538680.png?f=webp"
@@ -159,7 +170,7 @@
                             <div class="profile-popup-header">{{namn}} --- {{saldo}} $</div>
                             <ul>
                                 <li><a href="">Min profil</a></li>
-                                <li><a href="">Mina ordrar</a></li>
+                                <li><a href="{{ url_for('historik', name = namn )}}">Mina ordrar</a></li>
                                 <li><a href="" id="openDepositModal">Sätta in saldo</a></li>
                                 <li><a href="{{ url_for('home')}}"><span>Logga ut</span></a></li>
                             </ul>
@@ -169,69 +180,87 @@
             </nav>
         </div>
     </header>
-    <!-- Hero-sektion -->
-    <section class="hero">
-        <h1>Allt du behöver. En butik.</h1>
-        <p>Upptäck vårt breda sortiment av kvalitetsprodukter för alla dina behov. Från elektronik och kläder till
-            möbler och matvaror.</p>
-        <a href="" class="btn">Shoppa nu</a>
-    </section>
+   <!-- Hero-sektion -->
+<section class="hero">
+    <h1>Allt du behöver. En butik.</h1>
+    <p>Upptäck vårt breda sortiment av kvalitetsprodukter för alla dina behov. Från elektronik och kläder till
+        möbler och matvaror.</p>
+    <a href="" class="btn">Shoppa nu</a>
+</section>
 
-    <!-- Populära produkter -->
-    <section class="products">
-        {%if view_type == "produkter" %}
+<!-- Populära produkter -->
+<section class="products">
+    {% if view_type == "produkter" %}
         <h2 class="section-title">Populära Produkter</h2>
-        {%elif view_type == "kategorier" %}
+    {% elif view_type == "kategorier" %}
         <h2 class="section-title">Kategorier</h2>
-        {% endif %}
-        <div class="product-grid">
-            {%if view_type == "produkter" %}
+    {% elif view_type == "historik" %}
+        <h2 class="section-title">Produkter Historik</h2>
+    {% endif %}
+
+    <div class="product-grid">
+        {% if view_type == "produkter" %}
             {% for produkt in produkter[:4] %}
-            <div class="product-card">
-                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
-                <div class="product-info">
-                    <h3>{{ produkt.produkt_namn }}</h3>
-                    <span class="price">{{ produkt.produkt_pris }} USD</span>
-                    <p>{{ produkt.produkt_beskrivning }}</p>
-                    <form method="post">
-                        <input type="hidden" name="form-type" value="köp">
-                        <input type="hidden" name="produkt_id" value="{{ produkt.produkt_id }}">
-                        <button type="submit" class="btn">Köp nu</button>
-                    </form>
+                <div class="product-card">
+                    <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
+                    <div class="product-info">
+                        <h3>{{ produkt.produkt_namn }}</h3>
+                        <span class="price">{{ produkt.produkt_pris }} USD</span>
+                        <p>{{ produkt.produkt_beskrivning }}</p>
+                        <form method="post">
+                            <input type="hidden" name="form-type" value="köp">
+                            <input type="hidden" name="produkt_id" value="{{ produkt.produkt_id }}">
+                            <button type="submit" class="btn">Lägg till i kundvagn</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
             {% endfor %}
-            {%elif view_type == "kategorier" %}
+        
+        {% elif view_type == "kategorier" %}
             {% for kategori in kategorier %}
-            <div class="product-card">
-                <div class="product-info">
-                    <h3>{{ kategori }}</h3>
-                    <a href="{{ url_for('kategorier_namn', kategorier_namn = kategori, namn = namn) }}" class="btn">Gå
-                        nu</a>
+                <div class="product-card">
+                    <div class="product-info">
+                        <h3>{{ kategori }}</h3>
+                        <a href="{{ url_for('kategorier_namn', kategorier_namn=kategori, namn=namn) }}" class="btn">Gå nu</a>
+                    </div>
                 </div>
-            </div>
             {% endfor %}
-            {%elif view_type == "kategorier_produkter" %}
+        
+        {% elif view_type == "kategorier_produkter" %}
             {% for produkt in produkters %}
-            <div class="product-card">
-                <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
-                <div class="product-info">
-                    <h3>{{ produkt.produkt_namn }}</h3>
-                    <span class="price">{{ produkt.produkt_pris }} USD</span>
-                    <p>{{ produkt.produkt_beskrivning }}</p>
-                    <form method="post">
-                        <input type="hidden" name="form-type" value="köp">
-                        <input type="hidden" name="produkt_id" value="{{ produkt.produkt_id }}">
-                        <button type="submit" class="btn">Köp nu</button>
-                    </form>
+                <div class="product-card">
+                    <img src="{{ produkt.produkt_bild }}" alt="{{ produkt.produkt_namn }}" class="product-img">
+                    <div class="product-info">
+                        <h3>{{ produkt.produkt_namn }}</h3>
+                        <span class="price">{{ produkt.produkt_pris }} USD</span>
+                        <p>{{ produkt.produkt_beskrivning }}</p>
+                        <form method="post">
+                            <input type="hidden" name="form-type" value="köp">
+                            <input type="hidden" name="produkt_id" value="{{ produkt.produkt_id }}">
+                            <button type="submit" class="btn">Lägg till i kundvagn</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
             {% endfor %}
-            {% endif %}
 
-        </div>
+        {% elif view_type == "historik" %}
+            {% for produkt in historik %}
+                <div class="product-card">
+                    <img src="{{ produkt.thumbnail }}" alt="{{ produkt.title }}" class="product-img">
+                    <div class="product-info">
+                        <h3>{{ produkt.title }}</h3>
+                        <span class="price">{{ produkt.price }} USD</span>
+                        </div>
+                </div>
+            {% endfor %}
+            <form method="POST">
+                <input type="hidden" name="form-type" value="rensa">
+            <button type="submit" class="btn">Rensa Historik</button>
+            </form>
+        {% endif %}
+    </div>
+</section>
 
-    </section>
     <!-- Om oss -->
     <section class="about">
         <div class="about-container">
@@ -306,7 +335,8 @@
                 <h2>Sätta in pengar</h2>
                 <button class="close-modal" onclick="closeDepositModal()">&times;</button>
             </div>
-            <form method="POST" action="/All-in-One-Shop/log/välkomna-{{ namn }}">
+            <form method="POST">
+                <input type="hidden" name="form-type" value="saldo">
                 <div class="modal-body">
                     <div class="input-group">
                         <label for="depositAmount">Belopp (USD)</label>
@@ -328,7 +358,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="modal-btn btn-cancel" onclick="closeDepositModal()">Avbryt</button>
-                    <button class="modal-btn btn-deposit" type="submit">Sätt in</button>
+                    <button class="modal-btn btn-deposit" type="submit" value="sätta_in">Sätt in</button>
                 </div>
         </div>
     </div>

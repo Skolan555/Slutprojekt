@@ -89,6 +89,20 @@ class Person(Konto):
         if belopp >= 0:
             self.__saldo += belopp
             Person.uppdatera_saldo(self._namn, self.__saldo)
+            
+    def checkout(total_summa):
+        Person.set_saldo(Person.get_saldo() - total_summa)
+        Person.uppdatera_saldo(Person._namn, Person.get_saldo())
+        konton = Konto.hämta_konton()
+        for konto in konton:
+            if konto["namn"] == Person._namn:
+                konto["historik"].extend(Person.produkt_kundvagn)
+                konto["kundvagn"] = []  
+                break
+            with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
+                json.dump(konton, file, indent=4, ensure_ascii=False)
+                Person.produkt_kundvagn = []
+        
         
 class ProduktAPI():
     def __init__(self):
@@ -149,7 +163,7 @@ class Produkt(ProduktAPI):
         return kategorier
 
   
-@app.route("/All-in-One-Shop", methods=["GET"])
+@app.route("/", methods=["GET"])
 def home():
     produkter = Produkt.skapa_produkter_från_api()
     
@@ -202,7 +216,7 @@ def main(name):
                 namn = k["namn"],
                 email = k["email"],
                 lösenord = k["lösenord"],
-                saldo = int(k["saldo"]),
+                saldo = float(k["saldo"]),
             )
             person.produkt_kundvagn = k.get("kundvagn", [])
             
@@ -210,21 +224,34 @@ def main(name):
                 form_type = request.form.get("form-type")
                 if form_type == "saldo":
                     try:
-                        belopp = int(request.form.get("deposit"))
+                        belopp = float(request.form.get("deposit"))
                         if belopp >= 0:
                             person.sätt_in_saldo(belopp)
                     except (ValueError, TypeError):
                         pass
                 elif form_type == "köp":
                     try:
-                        produkt_id = int(request.form.get("produkt_id"))
+                        produkt_id = float(request.form.get("produkt_id"))
                         person.lägg_till(produkt_id)
 
                     except (ValueError, TypeError):
                         return render_template("log.html",
                             fel = "Felaktigt produkt-ID"
-                        )    
-                    
+                        )   
+                elif form_type == "checkout":
+                    total_summa = sum(p["price"] for p in Person.produkt_kundvagn)
+
+                    if person.get_saldo() >= total_summa:
+                        person.checkout(total_summa)
+                        
+                    else:
+                        return render_template("main.html",
+                            fel = "Inte tillräckligt med saldo.",
+                            namn = name,
+                            saldo = person.get_saldo(),
+                            kundvagn = person.produkt_kundvagn,
+                        )
+         
             produkter = Produkt.skapa_produkter_från_api()
             return render_template("main.html", 
                 produkter = produkter, 
@@ -247,7 +274,7 @@ def kategorier(namn):
                 namn = k["namn"],
                 email = k["email"],
                 lösenord = k["lösenord"],
-                saldo = int(k["saldo"]),
+                saldo = float(k["saldo"]),
             )
             person.produkt_kundvagn = k.get("kundvagn", [])
         
@@ -256,6 +283,7 @@ def kategorier(namn):
         kategorier = alla_kategorier,
         namn = namn,
         saldo = person.get_saldo(),
+        kundvagn = person.produkt_kundvagn,
         view_type = "kategorier"
     )
     
@@ -272,21 +300,21 @@ def kategorier_namn(kategorier_namn, namn):
                 namn = k["namn"],
                 email = k["email"],
                 lösenord = k["lösenord"],
-                saldo = int(k["saldo"]),
+                saldo = float(k["saldo"]),
             )
             person.produkt_kundvagn = k.get("kundvagn", [])
             if request.method == "POST":
                 form_type = request.form.get("form-type")
                 if form_type == "saldo":
                     try:
-                        belopp = int(request.form.get("deposit"))
+                        belopp = float(request.form.get("deposit"))
                         if belopp >= 0:
                             person.sätt_in_saldo(belopp)
                     except (ValueError, TypeError):
                         pass
                 elif form_type == "köp":
                     try:
-                        produkt_id = int(request.form.get("produkt_id"))
+                        produkt_id = float(request.form.get("produkt_id"))
                         person.lägg_till(produkt_id)
 
                     except (ValueError, TypeError):
@@ -298,8 +326,62 @@ def kategorier_namn(kategorier_namn, namn):
         produkters = produkter_i_kategori,
         namn = namn,
         saldo = person.get_saldo(),
+        kundvagn = person.produkt_kundvagn,
         view_type = "kategorier_produkter"
-    )
+    )   
+    
+@app.route("/All-in-One-Shop/log/<name>/produkt-historik", methods=["GET", "POST"])
+def historik(name):
+    konton = Konto.hämta_konton()
+
+    for k in konton:
+        if k["namn"] == name:
+            person = Person(
+                namn=k["namn"],
+                email=k["email"],
+                lösenord=k["lösenord"],
+                saldo=float(k["saldo"]),
+            )
+            person.produkt_kundvagn = k.get("kundvagn", [])
+            historik = k.get("historik", [])
+
+            if request.method == "POST":
+                form_type = request.form.get("form-type")
+                if form_type == "rensa":
+                    for konto in konton:
+                        if konto["namn"] == name:
+                            konto["historik"] = []
+                            break
+
+                    with open("slutprojektet/konto.json", "w", encoding="utf-8") as f:
+                        json.dump(konton, f, indent=4, ensure_ascii=False)
+
+                    historik = []
+
+            return render_template("main.html", 
+                namn = name, 
+                historik = historik,
+                kundvagn = person.produkt_kundvagn,
+                view_type = "historik"
+            )
+
+    return "Konto hittades inte" 
+    
+@app.route('/ta_bort/<namn>/<int:produkt_id>')
+def ta_bort_produkt(namn, produkt_id):
+    with open("slutprojektet/konto.json", "r", encoding="utf-8") as f:
+        konton = json.load(f)
+
+    for konto in konton:
+        if konto["namn"] == namn:
+            konto["kundvagn"] = [p for p in konto["kundvagn"] if p.get("id") != produkt_id]
+            break  
+
+    with open("slutprojektet/konto.json", "w", encoding="utf-8") as f:
+        json.dump(konton, f, indent=4, ensure_ascii=False)
+
+    return redirect(url_for('main', name = namn))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
