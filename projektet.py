@@ -23,6 +23,7 @@ class Konto():
     def get_lösenord(self):
         return self.__lösenord
     
+    @staticmethod
     def hämta_konton():
         path = "slutprojektet/konto.json"
         if not os.path.exists(path):
@@ -73,7 +74,8 @@ class Person(Konto):
                 self.produkt_kundvagn.append(produkt)
                 Person.uppdatera_kundvagn(self._namn, self.produkt_kundvagn)
                 break
-
+    
+    @staticmethod
     def uppdatera_saldo(namn, nytt_saldo):
         konton = Konto.hämta_konton()
 
@@ -90,19 +92,35 @@ class Person(Konto):
             self.__saldo += belopp
             Person.uppdatera_saldo(self._namn, self.__saldo)
             
-    def checkout(total_summa):
-        Person.set_saldo(Person.get_saldo() - total_summa)
-        Person.uppdatera_saldo(Person._namn, Person.get_saldo())
+    def checkout(self, total_summa):
+        self.set_saldo(self.get_saldo() - total_summa)
+        self.uppdatera_saldo(self._namn, self.get_saldo())
+
         konton = Konto.hämta_konton()
         for konto in konton:
-            if konto["namn"] == Person._namn:
-                konto["historik"].extend(Person.produkt_kundvagn)
+            if konto["namn"] == self._namn:
+                konto["historik"].extend(self.produkt_kundvagn)
                 konto["kundvagn"] = []  
                 break
-            with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
-                json.dump(konton, file, indent=4, ensure_ascii=False)
-                Person.produkt_kundvagn = []
+
+        with open("slutprojektet/konto.json", "w", encoding="utf-8") as file:
+            json.dump(konton, file, indent=4, ensure_ascii=False)
+
+        self.produkt_kundvagn = []     
         
+    @classmethod
+    def hämta_person(cls, namn, konton):
+        for k in konton:
+            if k["namn"] == namn:
+                person = cls(
+                    namn = k["namn"],
+                    email = k["email"],
+                    lösenord = k["lösenord"],
+                    saldo = float(k["saldo"])
+                )
+                person.produkt_kundvagn = k.get("kundvagn", [])
+                return person
+        return None       
         
 class ProduktAPI():
     def __init__(self):
@@ -212,13 +230,7 @@ def main(name):
     
     for k in konton:
         if k["namn"] == name:
-            person = Person(
-                namn = k["namn"],
-                email = k["email"],
-                lösenord = k["lösenord"],
-                saldo = float(k["saldo"]),
-            )
-            person.produkt_kundvagn = k.get("kundvagn", [])
+            person = Person.hämta_person(name, konton)
             
             if request.method == "POST":
                 form_type = request.form.get("form-type")
@@ -239,7 +251,7 @@ def main(name):
                             fel = "Felaktigt produkt-ID"
                         )   
                 elif form_type == "checkout":
-                    total_summa = sum(p["price"] for p in Person.produkt_kundvagn)
+                    total_summa = sum(p["price"] for p in person.produkt_kundvagn)
 
                     if person.get_saldo() >= total_summa:
                         person.checkout(total_summa)
@@ -264,19 +276,36 @@ def main(name):
     return "Konto hittades inte"
 
 
-@app.route("/All-in-One-Shop/log/<namn>/kategorier", methods=["GET"])
+@app.route("/All-in-One-Shop/log/<namn>/kategorier", methods=["GET", "POST"])
 def kategorier(namn):
     
     konton = Konto.hämta_konton()
     for k in konton:
          if k["namn"] == namn:
-            person = Person(
-                namn = k["namn"],
-                email = k["email"],
-                lösenord = k["lösenord"],
-                saldo = float(k["saldo"]),
-            )
-            person.produkt_kundvagn = k.get("kundvagn", [])
+            person = Person.hämta_person(namn, konton)
+            
+            if request.method == "POST":
+                form_type = request.form.get("form-type")
+                if form_type == "saldo":
+                    try:
+                        belopp = float(request.form.get("deposit"))
+                        if belopp >= 0:
+                            person.sätt_in_saldo(belopp)
+                    except (ValueError, TypeError):
+                        pass
+                elif form_type == "checkout":
+                    total_summa = sum(p["price"] for p in person.produkt_kundvagn)
+
+                    if person.get_saldo() >= total_summa:
+                        person.checkout(total_summa)
+                    else:
+                        return render_template("main.html",
+                            fel = "Inte tillräckligt med saldo.",
+                            kategorier = alla_kategorier,
+                            namn = namn,
+                            saldo = person.get_saldo(),
+                            kundvagn = person.produkt_kundvagn,
+                        )               
         
     alla_kategorier = Produkt.visa_kategorier()
     return render_template("main.html", 
@@ -296,13 +325,8 @@ def kategorier_namn(kategorier_namn, namn):
     konton = Konto.hämta_konton()
     for k in konton:
         if k["namn"] == namn:
-            person = Person(
-                namn = k["namn"],
-                email = k["email"],
-                lösenord = k["lösenord"],
-                saldo = float(k["saldo"]),
-            )
-            person.produkt_kundvagn = k.get("kundvagn", [])
+            person = Person.hämta_person(namn, konton)
+            
             if request.method == "POST":
                 form_type = request.form.get("form-type")
                 if form_type == "saldo":
@@ -320,7 +344,19 @@ def kategorier_namn(kategorier_namn, namn):
                     except (ValueError, TypeError):
                         return render_template("log.html",
                             fel = "Felaktigt produkt-ID"
-                        ) 
+                        )
+                elif form_type == "checkout":
+                    total_summa = sum(p["price"] for p in person.produkt_kundvagn)
+
+                    if person.get_saldo() >= total_summa:
+                        person.checkout(total_summa)
+                    else:
+                        return render_template("main.html",
+                            fel = "Inte tillräckligt med saldo.",
+                            namn = namn,
+                            saldo = person.get_saldo(),
+                            kundvagn = person.produkt_kundvagn,
+                        )                       
     
     return render_template("main.html",  
         produkters = produkter_i_kategori,
@@ -336,13 +372,7 @@ def historik(name):
 
     for k in konton:
         if k["namn"] == name:
-            person = Person(
-                namn=k["namn"],
-                email=k["email"],
-                lösenord=k["lösenord"],
-                saldo=float(k["saldo"]),
-            )
-            person.produkt_kundvagn = k.get("kundvagn", [])
+            person = Person.hämta_person(name, konton)
             historik = k.get("historik", [])
 
             if request.method == "POST":
@@ -357,11 +387,32 @@ def historik(name):
                         json.dump(konton, f, indent=4, ensure_ascii=False)
 
                     historik = []
+                elif form_type == "saldo":
+                    try:
+                        belopp = float(request.form.get("deposit"))
+                        if belopp >= 0:
+                            person.sätt_in_saldo(belopp)
+                    except (ValueError, TypeError):
+                        pass
+                elif form_type == "checkout":
+                    total_summa = sum(p["price"] for p in person.produkt_kundvagn)
+
+                    if person.get_saldo() >= total_summa:
+                        person.checkout(total_summa)
+                        
+                    else:
+                        return render_template("main.html",
+                            fel = "Inte tillräckligt med saldo.",
+                            namn = name,
+                            saldo = person.get_saldo(),
+                            kundvagn = person.produkt_kundvagn,
+                        )        
 
             return render_template("main.html", 
                 namn = name, 
                 historik = historik,
                 kundvagn = person.produkt_kundvagn,
+                saldo = person.get_saldo(), 
                 view_type = "historik"
             )
 
