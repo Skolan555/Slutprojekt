@@ -128,13 +128,13 @@ class ProduktAPI():
         
     def hämta_produktdata(self, antal = 194): 
         try:
-            response = requests.get(self.api_url, timeout=5) #Om inget svar kommer inom 5 sekunder, då ska den visa fel. 
-            response.raise_for_status()  #Den kollar om svaret från API har en felkod.
+            response = requests.get(self.api_url, timeout=5) 
+            response.raise_for_status() 
             data = response.json()
             return data.get("products", [])[:antal]
         except requests.exceptions.RequestException as e:
             print(f"Något gick fel vid hämtning av produkter: {e}")
-            return [] #Den ska returnerar en tom lista för att undvika att det förstöra resten av programmet.
+            return [] 
                 
 class Produkt(ProduktAPI):
     def __init__(self, produkt_namn, produkt_pris, produkt_beskrivning, produkt_bild, produkt_kategori, produkt_id):
@@ -243,7 +243,7 @@ def main(name):
                         pass
                 elif form_type == "köp":
                     try:
-                        produkt_id = float(request.form.get("produkt_id"))
+                        produkt_id = int(request.form.get("produkt_id"))
                         person.lägg_till(produkt_id)
 
                     except (ValueError, TypeError):
@@ -338,7 +338,7 @@ def kategorier_namn(kategorier_namn, namn):
                         pass
                 elif form_type == "köp":
                     try:
-                        produkt_id = float(request.form.get("produkt_id"))
+                        produkt_id = int(request.form.get("produkt_id"))
                         person.lägg_till(produkt_id)
 
                     except (ValueError, TypeError):
